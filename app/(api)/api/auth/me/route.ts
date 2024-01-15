@@ -1,10 +1,8 @@
 export const runtime = 'edge';
-
+import { NextResponse } from 'next/server';
 import { BACKEND_CODES as APP_CODES } from '@/constant/error_codes';
-
 import { fetchProfile } from '@/services/medusa/server/profile.service';
 import { errorResponseHandler } from '@/utils/error-response-handler';
-import { NextResponse } from 'next/server';
 
 export async function GET(request: Request): Promise<Response> {
   const headersList = request.headers;
