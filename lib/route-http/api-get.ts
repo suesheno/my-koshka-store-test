@@ -1,5 +1,5 @@
 import { FRONTEND_CODES as APP_CODES } from '@/constant/error_codes';
-import { createErrorReturn } from '../../utils/create-error-return';
+import { createErrorReturn } from '@/utils/create-error-return';
 
 export const apiFetch = async (url: string, token?: string) => {
   let accesToken = null;
