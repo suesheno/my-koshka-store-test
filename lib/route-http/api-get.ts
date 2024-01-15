@@ -6,6 +6,7 @@ export const apiFetch = async (url: string, token?: string) => {
   if (typeof window !== 'undefined') {
     accesToken = localStorage.getItem('jwt');
   }
+  console.log('resrt');
   const headerConfig: any = {};
   if (accesToken) {
     headerConfig['Authorization'] = `Bearer ${accesToken}`;
