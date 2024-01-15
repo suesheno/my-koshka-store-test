@@ -1,50 +1,41 @@
 import Image from 'next/image';
+import { TwicImg } from '@twicpics/components/react'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 
-import SampleProdImage from '@/public/images/sample-prod-1.png';
-import AddToCartAction from './add-to-cart-action';
-import { ProductProps } from '@/types/types';
-import Link from 'next/link';
-import {
-  ProductType,
-  StoreProductsListRes,
-  StoreProductsRes,
-} from '@medusajs/medusa';
-import { FilterableProductProps } from '@medusajs/medusa/dist/types/product';
 import { PricedProduct } from '@medusajs/medusa/dist/types/pricing';
 
 const ProductCard = ({ product }: { product: PricedProduct }) => {
   return (
-    <Card className='border-0 grid items-stretch'>
-      <CardHeader className='p-0 px-[10px]'>
+    <Card className='border-0 grid items-stretch h-full hover:bg-koshkaGreen/5'>
+      <div className='m-3'>
+      <CardHeader className='p-0'>
         <div className='relative w-full h-[220px]'>
-          <Image
-            fill
-            src={product?.thumbnail!}
-            alt='image'
-            className='object-cover object-center'
-            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-          />
+                <TwicImg
+                    src={product?.thumbnail!.substring(product?.thumbnail!.lastIndexOf("/") + 1)}
+                    alt={`${product?.title} image`}
+                    className='absolute w-full h-full'
+                    mode="cover"
+                    refit
+                    ratio="none"
+                    focus="auto"
+                />
         </div>
       </CardHeader>
       <CardContent className='p-0 px-[10px] pt-3'>
         <CardTitle className='font-fredoka mb-5 xsmall:regular-20 2xsmall:text-base'>
-          <Link href={`/products/${product?.handle}`}>{product?.title}</Link>
+          {product?.title}
         </CardTitle>
         <CardDescription className='font-raleway text-gray-200 xsmall:regular-18 2xsmall:text-xs'>
           {product?.description}
         </CardDescription>
       </CardContent>
-      <CardFooter className='p-0 px-[10px] pt-7 pb-2 self-end'>
-        <AddToCartAction />
-      </CardFooter>
+      </div>
     </Card>
   );
 };

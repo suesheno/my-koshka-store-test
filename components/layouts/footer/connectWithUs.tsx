@@ -23,7 +23,6 @@ export default function ConnectWithUs() {
         <button
           className='w-[93px] text-center bg-primary h-[29px] rounded-r-[5px]'
           onClick={() => {
-            console.log('send this email', email);
             setEmailValue('');
           }}>
           Submit

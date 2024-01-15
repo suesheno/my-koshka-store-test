@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
+  mode: 'jit',
   darkMode: ['class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -20,26 +22,21 @@ module.exports = {
         width: 'width',
         spacing: 'margin, padding',
       },
+      minWidth: {
+        '0': '0',
+        '1/4': '25%',
+        '1/2': '50%',
+        '3/4': '75%',
+        'full': '100%',
+      },
       maxWidth: {
         '8xl': '100rem',
       },
       fontFamily: {
-        inter: [
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'Helvetica Neue',
-          'Ubuntu',
-          'sans-serif',
-        ],
-        fredokaOne: 'Fredoka One Regular',
-        fredoka: 'Fredoka Regular',
-        fredokaMedium: 'Fredoka Medium',
-        fredokaSemiBold: 'Fredoka SemiBold',
-        fredokaBold: 'Fredoka Bold',
-        raleway: 'Raleway Regular',
+        inter: ['var(--font-inter)'],
+        fredoka: ['var(--font-fredoka)'],
+        raleway: ['var(--font-raleway)'],
+        fredokaOne: ['var(--font-fredokaOne)'],
       },
       screens: {
         '2xsmall': '320px',
@@ -98,6 +95,7 @@ module.exports = {
           200: '#4F4F4F',
           300: '#E0E0E0',
         },
+        koshkaGreen: '#46B094',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -123,5 +121,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+      require('tailwindcss-animate'),
+      require('@tailwindcss/forms')
+  ],
 };

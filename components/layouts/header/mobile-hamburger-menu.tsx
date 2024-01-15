@@ -1,5 +1,7 @@
-import useBackdrop from '@/store/useBackdrop';
+'use client';
+
 import { FC } from 'react';
+import useBackdrop from '@/store/useBackdrop';
 
 interface Props {
   open: boolean;
@@ -11,8 +13,9 @@ const MobileHamburgerMenu: FC<Props> = ({ open, toggleMenu }) => {
 
   const handleClick = () => {
     toggleMenu();
-    backdropToggle(!open);
   };
+
+  backdropToggle(open);
 
   return (
     <button

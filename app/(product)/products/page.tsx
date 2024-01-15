@@ -1,13 +1,6 @@
-import HeroSection from '@/components/products/hero-section';
-import ProductsTemplate from '@/components/products/productsTemplate';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
-import Loader from './loading';
+export const dynamicParams = false;
 
-export const metadata: Metadata = {
-  title: 'Product',
-  description: 'This is the product page',
-};
+import ProductsTemplate from '@/components/products/productsTemplate';
 
 const ProductPage = () => {
   return <ProductsTemplate />;

@@ -1,12 +1,19 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'medusa-public-images.s3.eu-west-1.amazonaws.com',
+        hostname: 'koshka.twic.pics',
         port: '',
-        pathname: '/*',
+        pathname: '/images/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
       },
       {
         protocol: 'http',
@@ -26,6 +33,19 @@ const nextConfig = {
         port: '',
         pathname: '/mykoshka-com/**'
       },
+      {
+        protocol: 'https',
+        hostname: 'tailwindui.com',
+        port: '',
+        pathname: '/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'medusa-public-images.s3.eu-west-1.amazonaws.com',
+        port: '',
+        pathname: '/**'
+
+      }
     ],
   },
 };

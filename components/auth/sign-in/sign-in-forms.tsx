@@ -1,9 +1,17 @@
 'use client';
+
 import * as z from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  userDispatchContext,
+  userStateContext,
+  operations,
+} from '@/context/AuthenticationContext';
 
+import { ILoginToken } from '@/types/profiles';
 import {
   Form,
   FormControl,
@@ -16,16 +24,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { useLoginQuery } from '@/services/queries/auth.query';
+import { useContext, useState } from 'react';
+import { IAPPMessages } from '@/constant/error_codes';
+import { getLoginToken } from '@/services/medusa/client/profile.service';
 import { useAccount } from '@/store/useAccount';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import medusaGet from '@/lib/medusa-http/medusa-get';
 
 const SignInForm = () => {
-  const { isLoading, mutateAsync: login } = useLoginQuery();
+  const router = useRouter();
   const refetchCustomer = useAccount((state) => state.refetchCustomer);
   const [authError, setAuthError] = useState<string | undefined>(undefined);
-  const router = useRouter();
+  const dispatch = useContext(userDispatchContext);
 
   const formSchema = z.object({
     email: z.string().email(),
@@ -38,8 +47,9 @@ const SignInForm = () => {
       password: '',
     },
   });
-  const handleError = (_e: Error) => {
-    setAuthError('Invalid email or password');
+
+  const handleError = (error: string) => {
+    setAuthError(error);
     form.setError('email', {
       type: 'manual',
       message: '',
@@ -49,18 +59,32 @@ const SignInForm = () => {
       message: '',
     });
   };
-  const onSubmit = async (credentials: z.infer<typeof formSchema>) => {
-    await login(credentials)
-      .then(() => {
+
+  const formSubmit = async (credentials: {
+    email: string;
+    password: string;
+  }) => {
+    await getLoginToken(credentials)
+      .then((res) => {
+        const jwt = res.access_token;
+        const { LOGIN } = operations;
+        localStorage.setItem('jwt', jwt as string);
+        const payload = { jwt };
+        dispatch({ type: LOGIN, payload });
         refetchCustomer();
-        router.push('/');
       })
-      .catch(handleError);
+      .catch((err) => {
+        handleError(err.message);
+      });
   };
+
+  // useEffect(() => {
+  //     if (loggedIn) router.push('/profile/' + jwt );
+  // }, [user, jwt, loggedIn, router]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col'>
+      <form onSubmit={form.handleSubmit(formSubmit)} className='flex flex-col'>
         <FormField
           control={form.control}
           name='email'
@@ -115,7 +139,6 @@ const SignInForm = () => {
         <Button
           type='submit'
           size='lg'
-          disabled={isLoading}
           className='shad-btn_primary mx-auto mt-10 mb-4 !text-xl'>
           Sign In
         </Button>

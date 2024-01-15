@@ -9,9 +9,9 @@ export interface tagsQueryType {
 type STRAPI_TAG = {
     claimed: Maybe<Scalars['Boolean']>;
     active: Maybe<Scalars['Boolean']>;
-    createdAt: Maybe<Scalars['Date']>;
+    createdAt?: Maybe<Scalars['Date']>;
     id: Scalars['ID'];
-    pet: Maybe<STRAPI_PET>;
+    pet?: Maybe<STRAPI_PET>;
     tag: Maybe<Scalars['String']>;
-    updatedAt: Maybe<Scalars['Date']>;
+    updatedAt?: Maybe<Scalars['Date']>;
 };

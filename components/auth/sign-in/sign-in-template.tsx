@@ -7,12 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import SignInForm from './sign-in-forms';
+
 import Link from 'next/link';
 import { ROUTES_LIST } from '@/constant/routes';
 import { useAccount } from '@/store/useAccount';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import SignInForm from './sign-in-forms';
 
 const SignInTemplate = () => {
   const { customer, retrievingCustomer, refetchCustomer } = useAccount(

@@ -7,6 +7,7 @@ export const ROUTES = [
 ];
 
 export const ROUTES_LIST = {
-  SIGN_IN: '/sign-in',
-  SIGN_UP: '/sign-up',
+  SIGN_IN: '/signin',
+  SIGN_UP: '/signup',
+  PROFILE: '/profile',
 };

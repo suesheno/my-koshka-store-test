@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, RefObject, useRef, useState } from 'react';
+import { ChangeEvent, RefObject, useEffect, useRef, useState } from 'react';
 import * as z from 'zod';
 import Image from 'next/image';
 
@@ -27,7 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Link } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
+import { useAccount } from '@/store/useAccount';
+import { createProfile } from '@/services/medusa/client/profile.service';
 
 interface SelectOptionProps {
   value: string;
@@ -37,20 +40,36 @@ interface SelectOptionProps {
 
 const formSchema = z.object({
   email: z.string().email(),
-  firstName: z.string(),
-  lastName: z.string(),
-  phoneNumber: z.string(),
-  addresOne: z.string(),
-  addressTwo: z.string().optional(),
+  first_name: z
+    .string()
+    .regex(
+      new RegExp(/^([a-zA-Z]+\s)*[a-zA-Z]+$/),
+      'First Name must be a string'
+    ),
+  last_name: z
+    .string()
+    .regex(
+      new RegExp(/^([a-zA-Z]+\s)*[a-zA-Z]+$/),
+      'Last Name must be a string'
+    ),
+  phone: z.string(),
+  address_1: z.string(),
+  address_2: z.string().optional(),
   city: z.string(),
-  country: z.string(),
-  postalCode: z.string(),
+  country_code: z.string(),
+  postal_code: z.string(),
   company: z.string().optional(),
-  province: z.string(),
-  avatar: z.string(),
+  province: z.string().optional(),
+  avatar: z.string().optional(),
+  password: z.string().min(1, { message: 'Required' }),
 });
 
 const RegistrationForm = () => {
+  const refetchCustomer = useAccount((state) => state.refetchCustomer);
+  const customer = useAccount((state) => state.customer);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
   const countries: SelectOptionProps[] = Country.getAllCountries().map(
     (country) => ({
       value: country.name,
@@ -63,9 +82,12 @@ const RegistrationForm = () => {
   const [states, setStates] = useState<SelectOptionProps[]>([]);
   const hiddenFileInput = useRef<HTMLInputElement>(null);
 
+  const router = useRouter();
+
   const handleSelectCountry = (value: string) => {
-    form.setValue('country', value);
+    form.setValue('country_code', value);
     const country = countries.filter((country) => country.value === value);
+
     const stateData = State.getStatesOfCountry(country[0]?.isoCode).map(
       (state) => ({
         value: state.name,
@@ -102,16 +124,42 @@ const RegistrationForm = () => {
     }
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log('values', values);
+  const handleError = (error: any) => {
+    if (error.response.status === 422) {
+      form.setError('email', {
+        type: 'manual',
+        message: error.response.data.message,
+      });
+    } else {
+      setErrorMessage('Server error encountered, please try again');
+    }
   };
+  const onSubmit = async (details: z.infer<typeof formSchema>) => {
+    const { country_code } = details;
+    const country = countries.filter(
+      (country) => country.value === country_code
+    );
+    const countryCode = country[0].isoCode;
+    await createProfile({
+      ...details,
+      country_code: countryCode,
+    }).then(() => {
+      // refetchCustomer();
+    });
+  };
+
+  useEffect(() => {
+    if (customer) {
+      router.push('/');
+    }
+  }, [customer, router]);
 
   return (
     <div className='pb-11 xsmall:pt-[90px] 2xsmall:pt-6'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className='flex gap-x-20 tablet:flex-nowrap 2xsmall:flex-wrap'>
-            <div className='flex flex-col gap-y-5 tablet:w-4/5 2xsmall:w-full'>
+            <div className='flex flex-col gap-y-5 tablet:w-3/5 2xsmall:w-full'>
               <FormField
                 control={form.control}
                 name='email'
@@ -128,7 +176,7 @@ const RegistrationForm = () => {
               <div className=' gap-x-5 tablet:grid-cols-2 2xsmall:grid grid-cols-1 gap-y-5'>
                 <FormField
                   control={form.control}
-                  name='firstName'
+                  name='first_name'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className='input-label'>First Name</FormLabel>
@@ -141,7 +189,7 @@ const RegistrationForm = () => {
                 />
                 <FormField
                   control={form.control}
-                  name='lastName'
+                  name='last_name'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className='input-label'>Last Name</FormLabel>
@@ -156,7 +204,7 @@ const RegistrationForm = () => {
               <div className='gap-x-5 tablet:grid-cols-2 2xsmall:grid grid-cols-1 gap-y-5'>
                 <FormField
                   control={form.control}
-                  name='phoneNumber'
+                  name='phone'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className='input-label'>
@@ -169,7 +217,29 @@ const RegistrationForm = () => {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='input-label'>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='password'
+                          className='input-field'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
+              {errorMessage && (
+                <div className='mt-3'>
+                  <FormMessage>{errorMessage}</FormMessage>
+                </div>
+              )}
             </div>
             <div className='justify-center flex-wrap min-w-[241px] tablet:flex w-1/5 2xsmall:hidden'>
               <Image
@@ -204,10 +274,11 @@ const RegistrationForm = () => {
               />
             </div>
           </div>
+
           <div className='flex flex-col gap-y-5 mt-5 tablet:w-4/5 2xsmall:w-full'>
             <FormField
               control={form.control}
-              name='addresOne'
+              name='address_1'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='input-label'>Address 1</FormLabel>
@@ -220,7 +291,7 @@ const RegistrationForm = () => {
             />
             <FormField
               control={form.control}
-              name='addressTwo'
+              name='address_2'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='input-label'>Address 2</FormLabel>
@@ -246,13 +317,9 @@ const RegistrationForm = () => {
               />
               <FormField
                 control={form.control}
-                name='country'
+                name='country_code'
                 render={({ field }) => (
                   <FormItem className='tablet:w-[calc((100%/3)-15px)] tablet:order-2 2xsmall:w-[calc((100%/2)-15px)] order-3'>
-                    {/* <FormLabel className='input-label'>Country</FormLabel>
-                    <FormControl>
-                      <Input className='input-field' {...field} />
-                    </FormControl> */}
                     <FormLabel className='input-label'>Country</FormLabel>
                     <Select
                       onValueChange={(value) => handleSelectCountry(value)}
@@ -278,7 +345,7 @@ const RegistrationForm = () => {
               />
               <FormField
                 control={form.control}
-                name='postalCode'
+                name='postal_code'
                 render={({ field }) => (
                   <FormItem className='tablet:w-[calc((100%/3)-15px)] tablet:order-3 2xsmall:w-[calc((100%/2)-15px)] order-2'>
                     <FormLabel className='input-label'>Postal Code</FormLabel>
@@ -311,7 +378,7 @@ const RegistrationForm = () => {
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      disabled={form.getValues('country') === undefined}>
+                      disabled={form.getValues('country_code') === undefined}>
                       <FormControl>
                         <SelectTrigger className='input-field'>
                           <SelectValue placeholder='Select a state' />

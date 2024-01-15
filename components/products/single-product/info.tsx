@@ -1,12 +1,14 @@
+
 import { FC } from 'react';
 
 import QuantityInput from '@/components/shared/qty-input';
 import { Button } from '@/components/ui/button';
-import { PricedProduct } from '@medusajs/medusa/dist/types/pricing';
+//import { PricedProduct } from '@medusajs/medusa/dist/types/pricing';
 
 import ProductDescription from './product-description';
+import {IProduct} from "@/types/products";
 
-const Info: FC<{ product: PricedProduct }> = ({ product }) => {
+const Info: FC<{ product: IProduct }> = ({ product }) => {
   return (
     <div className='flex flex-col gap-6 pt-3'>
       <h1 className='xsmall:regular-40 font-fredokaOne text-black 2xsmall:regular-30'>

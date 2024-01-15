@@ -8,9 +8,17 @@ import ProductCategories from '@/components/home/product-categories';
 import PromotionalSection from '@/components/home/promotional-section';
 
 export const metadata: Metadata = {
-  title: 'Koshka Pet Product',
-  description: 'This is an e-commerce pet products',
-};
+    keywords: [
+        'Koshka',
+        'Pet Products',
+        'cats',
+        'felines',
+        'Home page',
+        'web store'
+    ],
+    title: 'Homepage',
+}
+
 
 const HomePage = () => {
   return (

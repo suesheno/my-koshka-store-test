@@ -1,6 +1,7 @@
-import Image from 'next/image'
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { petInfoType } from '@/types/pets'
+import { petInfoType } from '@/types/profiles'
 
 import {
     PhoneArrowUpRightIcon,
@@ -23,15 +24,19 @@ export default function Pet (props: propsType) {
     <>
     <h1 className="text-3xl font-bold text-center my-5"><span className="text-red-600">ReUnite</span> Profile - Vital Information</h1>
     <div className="grid gap-4 md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 pt-5">
-      <div className="row-span-5 col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-1">
+      <div className="row-span-5 col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-1 min-h-[50vh] lg:min-h-0">
+        <div className="relative h-3/4">
         <Image
-          className="inline-block rounded-xl w-full"
+          className="object-cover rounded-2xl"
           src={pet.image.url}
-          width={150}
-          height={150}
+          //width={150}
+          //height={150}
+          sizes="100vw"
           alt={`${pet.name}'s photo`}
-          loading = 'eager'
+          loading='eager'
+          fill={true}
         />
+        </div>
         <div className="pt-6 md:grid hidden place-items-center">
         <a href={`tel:${process.env.NEXT_PUBLIC_REUNITE_PHONE},${pet.contact}`}>
           <button
@@ -66,8 +71,10 @@ export default function Pet (props: propsType) {
         <dt className="text-sm font-bold leading-6 text-gray-900">Known Diseases</dt>
         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
           <ul className="list-disc list-outside">
-          {pet.diseases.map((d: string) => (
-            <li key={d}>{d}</li>
+          {pet?.diseases?.map((d) => (
+            <li key={d.disease.code}>
+              <Link href={`/health/${d.disease.code}`} className='underline cursor-pointer hover:text-red-700'>{d.disease.code}</Link>
+            </li>
           ))}
           </ul>
         </dd>

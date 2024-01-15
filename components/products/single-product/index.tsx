@@ -1,13 +1,23 @@
-'use client';
-
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { PricedProduct } from '@medusajs/medusa/dist/types/pricing';
+//import { PricedProduct } from '@medusajs/medusa/dist/types/pricing';
 
 import Gallery from './gallery';
 import Info from './info';
+import {Metadata} from "next";
+import {IProduct} from "@/types/products";
 
-const SingleProductTemplate = ({ product }: { product: PricedProduct }) => {
+export const generateMetadata = async ({ product }: { product: IProduct }): Promise<Metadata> => {
+    return {
+        title: product?.title,
+        description: product?.description,
+        keywords: ["product page", product?.title, product?.collection.title],
+        openGraph: {
+            images: [{ url: product?.thumbnail! }],
+        },
+    };
+};
+const SingleProductTemplate = ({ product }: { product: IProduct }) => {
   return (
     <div className='max-container padding-container'>
       <div className='flex gap-x-6 pt-24 pb-24 2xsmall:flex-wrap 2xsmall:justify-center'>
