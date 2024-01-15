@@ -1,1 +1,0 @@
-export type { tosQueryType } from './tos'
