@@ -45,14 +45,14 @@ const teams = [
 const getProfile = async (auth: string) => {
   const id = (
     await (
-      await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}auth/me`, {
+      await fetch(`${process.env.NEXT_PUBLIC_ROOT}auth/me`, {
         headers: {
           Authorization: 'Bearer ' + auth,
         },
       })
     ).json()
   ).customer.id;
-  const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}profile/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_ROOT}profile/${id}`, {
     headers: {
       'Content-Type': 'application/json',
     },
